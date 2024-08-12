@@ -86,6 +86,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottie/
+    - assets/kakao_map.html
     - assets/icons/
   #   - images/a_dot_ham.jpeg
 
