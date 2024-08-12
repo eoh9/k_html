@@ -1,4 +1,5 @@
 import 'package:ai_assistant/screen/SurveyPage.dart';
+import 'package:ai_assistant/screen/splash_screen2.dart'; // SplashScreen2 임포트
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -8,7 +9,6 @@ import 'apis/app_write.dart';
 import 'helper/ad_helper.dart';
 import 'helper/global.dart';
 import 'helper/pref.dart';
-import 'screen/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +19,10 @@ Future<void> main() async {
 
   // Init preferences
   await Pref.initialize();
-  
+
   // For app write initialization
   AppWrite.init();
-  
+
   // For initializing Facebook ads SDK
   AdHelper.init();
 
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
             elevation: 1,
             centerTitle: true,
             titleTextStyle:
-                TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
           )),
       // Light 모드일 때 기본 설정
       theme: ThemeData(
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
             titleTextStyle: TextStyle(
                 color: Colors.blue, fontSize: 20, fontWeight: FontWeight.w500),
           )),
-      home: const SurveyPage(),
+      home: const SplashScreen2(), // SplashScreen2를 초기 화면으로 설정
     );
   }
 }
