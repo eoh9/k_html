@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId = "com.harshRajpurohit.ai_assistant"
-        minSdk = 23
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName

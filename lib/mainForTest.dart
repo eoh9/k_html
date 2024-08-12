@@ -1,21 +1,31 @@
 import 'package:ai_assistant/screen/SurveyPage.dart';
-import 'package:ai_assistant/screen/splash_screen2.dart'; // SplashScreen2 임포트
+import 'package:ai_assistant/screen/SurveyPage.dart';
+import 'package:ai_assistant/screen/splash_screen2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'apis/app_write.dart';
 import 'helper/ad_helper.dart';
 import 'helper/global.dart';
 import 'helper/pref.dart';
 
+// 전역 변수로 선언
+late InAppLocalhostServer localhostServer;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 로컬 서버 시작
+  localhostServer = InAppLocalhostServer();
+  await localhostServer.start();
 
   // Init Hive (로컬 저장소)
   await Hive.initFlutter();
   await Hive.openBox('surveyBox');
+  await Hive.openBox('selectedServicesBox');
 
   // Init preferences
   await Pref.initialize();

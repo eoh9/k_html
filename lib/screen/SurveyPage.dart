@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'MapPage.dart';
 
 class SurveyPage extends StatefulWidget {
   const SurveyPage({Key? key}) : super(key: key);
@@ -183,47 +184,48 @@ class _SurveyPageState extends State<SurveyPage> {
 
   Widget _buildNextButton() {
     return Align(
-      alignment: Alignment.centerRight, // 오른쪽 정렬
+      alignment: Alignment.centerRight,
       child: Container(
-        height: 50, // 높이 조정
+        height: 50,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2), // 그림자 색상과 투명도
-              blurRadius: 6, // 그림자의 흐림 정도
-              offset: Offset(0, 3), // 그림자의 위치
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 6,
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: ElevatedButton(
           onPressed: () {
             if (_selectedServices.isNotEmpty) {
-              // 선택한 항목을 Hive에 저장
               var box = Hive.box('selectedServicesBox');
               box.put('selectedServices', _selectedServices);
 
-              // 다음 화면으로 이동 (여기에 원하는 동작을 추가하세요)
-              print("선택한 서비스가 저장되었습니다: $_selectedServices");
+              // MapPage로 이동
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MapPage()),
+              );
             } else {
-              // 선택하지 않았을 때 경고 메시지 표시 (Snackbar)
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('적어도 하나의 서비스를 선택해 주세요.'),
-                  duration: Duration(seconds: 2), // 2초간 표시
+                  duration: Duration(seconds: 2),
                 ),
               );
             }
           },
           child: const Text(
             '완료 >',
-            style: TextStyle(color: Colors.black), // 글씨 색을 검은색으로 변경
+            style: TextStyle(color: Colors.black),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white, // 박스 배경색을 흰색으로 변경
+            backgroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 15),
-            minimumSize: Size(90, 50), // 버튼의 최소 크기를 지정
+            minimumSize: Size(90, 50),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero, // 직각 네모로 변경
+              borderRadius: BorderRadius.zero,
             ),
           ),
         ),

@@ -13,7 +13,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter: ^3.0.4  
+  kakao_flutter_sdk_common: ^1.9.5
+  webview_flutter: ^4.8.0
 
   # App Write Database (For dynamically getting API Key)  
   appwrite: ^12.0.4
@@ -67,6 +68,7 @@ dependencies:
 
   # Facebook Ads
   easy_audience_network: ^0.0.6
+  flutter_inappwebview: ^5.8.0
 
 dev_dependencies:
   flutter_test:
@@ -87,7 +89,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottie/
-    - assets/kakao_map.html
+    - assets/web/kakaomap.html
     - assets/icons/
   #   - images/a_dot_ham.jpeg
 
