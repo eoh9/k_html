@@ -9,11 +9,11 @@ class SurveyPage extends StatefulWidget {
 }
 
 class _SurveyPageState extends State<SurveyPage> {
-  List<int> _selectedServices = [];  // 여러 선택을 관리하는 리스트
+  List<int> _selectedServices = []; // 여러 선택을 관리하는 리스트
 
   final List<ServiceOption> _serviceOptions = [
     ServiceOption(icon: 'assets/icons/hearing.png', label: '청각 서비스'),
-    ServiceOption(icon: 'assets/icons/sign_language.png', label: '시각 서비스'),
+    ServiceOption(icon: 'assets/icons/visual.png', label: '시각 서비스'),
     ServiceOption(icon: 'assets/icons/wheelchair.png', label: '휠체어 서비스'),
     ServiceOption(icon: 'assets/icons/elder.png', label: '고령자 서비스'),
     ServiceOption(icon: 'assets/icons/child.png', label: '영유아 서비스'),
@@ -64,7 +64,8 @@ class _SurveyPageState extends State<SurveyPage> {
           ),
         ],
       ),
-      child: const Center( // 텍스트를 중앙에 배치
+      child: const Center(
+        // 텍스트를 중앙에 배치
         child: Text(
           '더 좋은 서비스를 제공하기 위해\n간단한 설문을 진행하겠습니다.',
           textAlign: TextAlign.center,
@@ -89,7 +90,8 @@ class _SurveyPageState extends State<SurveyPage> {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch, // stretch를 통해 텍스트가 가운데 정렬되도록 설정
+        crossAxisAlignment:
+            CrossAxisAlignment.stretch, // stretch를 통해 텍스트가 가운데 정렬되도록 설정
         children: [
           const Text(
             '필요한 서비스를 선택해 주세요.',
@@ -101,14 +103,21 @@ class _SurveyPageState extends State<SurveyPage> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: _serviceOptions.sublist(0, 3).map((option) => _buildServiceOption(option)).toList(),
+                children: _serviceOptions
+                    .sublist(0, 3)
+                    .map((option) => _buildServiceOption(option))
+                    .toList(),
               ),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: MediaQuery.of(context).size.width * 0.15),
-                  ..._serviceOptions.sublist(3).map((option) => Expanded(child: _buildServiceOption(option))).toList(),
+                  ..._serviceOptions
+                      .sublist(3)
+                      .map((option) =>
+                          Expanded(child: _buildServiceOption(option)))
+                      .toList(),
                   SizedBox(width: MediaQuery.of(context).size.width * 0.15),
                 ],
               ),
@@ -120,7 +129,8 @@ class _SurveyPageState extends State<SurveyPage> {
   }
 
   Widget _buildServiceOption(ServiceOption option) {
-    bool isSelected = _selectedServices.contains(_serviceOptions.indexOf(option));
+    bool isSelected =
+        _selectedServices.contains(_serviceOptions.indexOf(option));
     return GestureDetector(
       onTap: () {
         setState(() {
