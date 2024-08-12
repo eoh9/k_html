@@ -3,31 +3,30 @@ import 'package:hive/hive.dart';
 import 'package:get/get.dart';
 
 class SplashScreen2 extends StatefulWidget {
-  const SplashScreen2({super.key});
+  const SplashScreen2({Key? key}) : super(key: key);
+
   @override
   State<SplashScreen2> createState() => _SplashScreenState2();
 }
 
 class _SplashScreenState2 extends State<SplashScreen2> {
-  int selectedOption = 0;
-  String backgroundImage = 'assets/images/loading_page.png'; // 초기 배경 이미지 설정
-  late Box surveyBox;
-
-  // 선택된 항목을 저장할 리스트
-  List<String> selectedFood = [];
-  List<String> selectedDrink = [];
+  static const String _loadingImage = 'assets/images/loading_page.png';
+  static const String _backgroundImage = 'assets/images/background_page1.png';
+  String _currentBackgroundImage = _loadingImage;
+  late final Box _surveyBox;
 
   @override
   void initState() {
     super.initState();
-    surveyBox = Hive.box('surveyBox');
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        backgroundImage =
-            'assets/images/background_page1.png'; // 2초 후 배경 이미지 변경
-      });
-      _showSurveyDialog();
-    });
+    _initializeSurvey();
+  }
+
+  Future<void> _initializeSurvey() async {
+    _surveyBox = Hive.box('surveyBox');
+    // 2초 대기 후 화면 실행.
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() => _currentBackgroundImage = _backgroundImage);
+    _showSurveyDialog();
   }
 
   void _showSurveyDialog() {
@@ -35,501 +34,35 @@ class _SplashScreenState2 extends State<SplashScreen2> {
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.transparent,
-      builder: (BuildContext context) {
-        double width = MediaQuery.of(context).size.width;
-        double height = MediaQuery.of(context).size.height;
-        return Stack(
-          children: [
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.17,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Transform.translate(
-                      offset: Offset(0, -35), // y축 방향으로 10픽셀 위로 이동
-                      child: Image.asset(
-                        'assets/images/survey_dragon.png',
-                        width: 110.0,
-                        height: 110.0,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Transform.translate(
-                      offset: Offset(-25, -5),
-                      child: Text(
-                        '더 좋은 서비스를 제공하기 위해 간단한\n\t\t\t\t\t\t\t설문을 진행하겠다용',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.2,
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Dialog(
-                insetPadding: EdgeInsets.only(top: 20),
-                child: Container(
-                  width: width * 0.85,
-                  height: height * 0.4,
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(
-                          '역사에 대한 관심도는\n\t어느정도 이신가요?',
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            return ListView(
-                              children: [
-                                ListTile(
-                                  title: const Text('잘 모르겠습니다.'),
-                                  leading: Radio(
-                                    value: 1,
-                                    groupValue: selectedOption,
-                                    onChanged: (int? value) {
-                                      setState(() => selectedOption = value!);
-                                      surveyBox.put('historyInterest', 1); //surveyBox.get로 다른 클래스에서 반환 가능
-                                    },
-                                  ),
-                                ),
-                                ListTile(
-                                  title: const Text('보통 일반인 수준입니다.'),
-                                  leading: Radio(
-                                    value: 2,
-                                    groupValue: selectedOption,
-                                    onChanged: (int? value) {
-                                      setState(() => selectedOption = value!);
-                                      surveyBox.put('historyInterest', 2);
-                                    },
-                                  ),
-                                ),
-                                ListTile(
-                                  title: const Text('아주 잘 합니다.'),
-                                  leading: Radio(
-                                    value: 3,
-                                    groupValue: selectedOption,
-                                    onChanged: (int? value) {
-                                      setState(() => selectedOption = value!);
-                                      surveyBox.put('historyInterest', 3);
-                                    },
-                                  ),
-                                ),
-                                IconButton(
-                                  iconSize: 65.0,
-                                  icon: Image.asset(
-                                    'assets/images/next_dragon.png',
-                                    fit: BoxFit.contain,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _showSecondDialog();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      builder: (_) => _HistoryInterestDialog(
+        onComplete: _showFoodPreferenceDialog,
+      ),
     );
   }
 
-  void _showSecondDialog() {
+  void _showFoodPreferenceDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.transparent,
-      builder: (BuildContext context) {
-        double width = MediaQuery.of(context).size.width;
-        double height = MediaQuery.of(context).size.height;
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Stack(
-              children: [
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.17,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                padding: EdgeInsets.all(20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Transform.translate(
-                      offset: Offset(0, -35), // y축 방향으로 10픽셀 위로 이동
-                      child: Image.asset(
-                        'assets/images/survey_dragon.png',
-                        width: 110.0,
-                        height: 110.0,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Transform.translate(
-                      offset: Offset(-25, -5),
-                      child: Text(
-                        '더 좋은 서비스를 제공하기 위해 간단한\n\t\t\t\t\t\t\t설문을 진행하겠다용',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.2,
-                          color: Colors.black,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Dialog(
-                    insetPadding: EdgeInsets.only(top: 20),
-                    child: Container(
-                      width: width * 0.85,
-                      height: height * 0.4, // 크기를 조절하였습니다
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            child: Text(
-                              '좋아하는 음식과 음료의\n\t\t종류를 선택해주세요.',
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: GridView.count(
-                                    crossAxisCount: 4, // 한 행에 4개의 항목 배치
-                                    childAspectRatio:
-                                        1.5, // 항목의 가로세로 비율을 1.5로 설정
-                                    crossAxisSpacing: 15, // 항목 간의 가로 방향 여백
-                                    mainAxisSpacing: 20, // 항목 간의 세로 방향 여백
-                                    padding: EdgeInsets.all(10),
-                                    children: List.generate(4, (index) {
-                                      String food =
-                                          ["한식", "양식", "중식", "일식"][index];
-                                      bool isSelected =
-                                          selectedFood.contains(food);
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            if (isSelected) {
-                                              selectedFood.remove(food);
-                                            } else {
-                                              selectedFood.add(food);
-                                            }
-                                            surveyBox.put('food', selectedFood);
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? Colors.green[100]
-                                                : Colors.grey[200],
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: isSelected
-                                                ? Border.all(
-                                                    color: Colors.green,
-                                                    width: 2)
-                                                : null,
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              food,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: isSelected
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                                color: isSelected
-                                                    ? Colors.green
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 20.0,
-                                      top: 1.0,
-                                      bottom: 1.0),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: GridView.count(
-                                    crossAxisCount: 4, // 한 행에 4개의 항목 배치
-                                    childAspectRatio:
-                                        1.5, // 항목의 가로세로 비율을 1.5로 설정
-                                    crossAxisSpacing: 15, // 항목 간의 가로 방향 여백
-                                    mainAxisSpacing: 20, // 항목 간의 세로 방향 여백
-                                    padding: EdgeInsets.all(10),
-                                    children: List.generate(4, (index) {
-                                      String drink = [
-                                        "커피류",
-                                        "생과일주스",
-                                        "따뜻한 차",
-                                        "스무디"
-                                      ][index];
-                                      bool isSelected =
-                                          selectedDrink.contains(drink);
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            if (isSelected) {
-                                              selectedDrink.remove(drink);
-                                            } else {
-                                              selectedDrink.add(drink);
-                                            }
-                                            surveyBox.put('drink', selectedDrink);
-                                          });
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? Colors.green[100]
-                                                : Colors.grey[200],
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            border: isSelected
-                                                ? Border.all(
-                                                    color: Colors.green,
-                                                    width: 2)
-                                                : null,
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              drink,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: isSelected
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal,
-                                                color: isSelected
-                                                    ? Colors.green
-                                                    : Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 0),
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  IconButton(
-                                    iconSize: 99.0,
-                                    icon: Image.asset(
-                                      'assets/images/before_dragon.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(
-                                          context); // Close the dialog and return to the first dialog
-                                      _showSurveyDialog();
-                                    },
-                                  ),
-                                  IconButton(
-                                    iconSize: 108.0,
-                                    icon: Image.asset(
-                                      'assets/images/next_dragon.png',
-                                      fit: BoxFit.contain,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context); // 현재 대화창 닫기
-                                      _showThirdDialog(); // 새로운 대화창 열기
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (_) => _FoodPreferenceDialog(
+        onBack: _showSurveyDialog,
+        onComplete: _showAllergyDialog,
+      ),
     );
   }
 
-void _showThirdDialog() {
+  void _showAllergyDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.transparent,
-      builder: (BuildContext context) {
-        double width = MediaQuery.of(context).size.width;
-        double height = MediaQuery.of(context).size.height;
-        TextEditingController allergyController = TextEditingController();
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Stack(
-              children: [
-                Positioned(
-                  top: MediaQuery.of(context).size.height * 0.17,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Transform.translate(
-                          offset: Offset(0, -35), // y축 방향으로 10픽셀 위로 이동
-                          child: Image.asset(
-                            'assets/images/survey_dragon.png',
-                            width: 110.0,
-                            height: 110.0,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Transform.translate(
-                          offset: Offset(-25, -5),
-                          child: Text(
-                            '더 좋은 서비스를 제공하기 위해 간단한\n\t\t\t\t\t\t\t설문을 진행하겠다용',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.2,
-                              color: Colors.black,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Dialog(
-                    insetPadding: EdgeInsets.only(top: 20),
-                    child: Container(
-                      width: width * 0.85,
-                      height: height * 0.4,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            child: Text(
-                              '못 먹거나 알러지 있는 음식\n\t\t\t\t\t\t\t있으면 알려주세요.',
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: TextField(
-                              controller: allergyController,
-                              decoration: InputDecoration(
-                                hintText: '여기에 입력하세요',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ),
-                          Spacer(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  bottom: 5.0,
-                                  left: 23.0,
-                                ),
-                                child: IconButton(
-                                  iconSize: 100.0,
-                                  icon: Image.asset(
-                                    'assets/images/before_dragon.png',
-                                    fit: BoxFit.contain,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _showSecondDialog();
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  bottom: 5.0,
-                                  right: 15.0,
-                                ),
-                                child: IconButton(
-                                  iconSize: 118,
-                                  icon: Image.asset(
-                                    'assets/images/submit_dragon.png',
-                                    fit: BoxFit.contain,
-                                  ),
-                                  onPressed: () {
-                                    surveyBox.put('allergies', allergyController.text); // 여기서 사용자 입력을 저장
-                                    Navigator.pop(context); // 현재 대화창 닫기
-                                    // 여기서 다음 페이지로 이동하는 로직을 추가하세요
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (_) => _AllergyDialog(
+        onBack: _showFoodPreferenceDialog,
+        onComplete: () {
+          // Navigate to next screen or perform final action
+        },
+      ),
     );
   }
 
@@ -539,10 +72,346 @@ void _showThirdDialog() {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(backgroundImage),
+            image: AssetImage(_currentBackgroundImage),
             fit: BoxFit.cover,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SurveyDialogWrapper extends StatelessWidget {
+  final Widget child;
+
+  const _SurveyDialogWrapper({Key? key, required this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _SurveyHeader(),
+        Align(
+          alignment: Alignment.topCenter,
+          child: Dialog(
+            insetPadding: const EdgeInsets.only(top: 20),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: MediaQuery.of(context).size.height * 0.4,
+              padding: const EdgeInsets.all(20),
+              child: child,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SurveyHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: MediaQuery.of(context).size.height * 0.17,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Transform.translate(
+              offset: const Offset(0, -35),
+              child: Image.asset(
+                'assets/images/survey_dragon.png',
+                width: 110.0,
+                height: 110.0,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Transform.translate(
+              offset: const Offset(-25, -5),
+              child: const Text(
+                '더 좋은 서비스를 제공하기 위해 간단한\n\t\t\t\t\t\t\t설문을 진행하겠다용',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.2,
+                  color: Colors.black,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HistoryInterestDialog extends StatefulWidget {
+  final VoidCallback onComplete;
+
+  const _HistoryInterestDialog({Key? key, required this.onComplete}) : super(key: key);
+
+  @override
+  _HistoryInterestDialogState createState() => _HistoryInterestDialogState();
+}
+
+class _HistoryInterestDialogState extends State<_HistoryInterestDialog> {
+  int _selectedOption = 0;
+  final Box _surveyBox = Hive.box('surveyBox');
+
+  @override
+  Widget build(BuildContext context) {
+    return _SurveyDialogWrapper(
+      child: Column(
+        children: [
+          const Text(
+            '역사에 대한 관심도는\n\t어느정도 이신가요?',
+            style: TextStyle(fontSize: 18),
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildRadioListTile('잘 모르겠습니다.', 1),
+                _buildRadioListTile('보통 일반인 수준입니다.', 2),
+                _buildRadioListTile('아주 잘 합니다.', 3),
+              ],
+            ),
+          ),
+          _NextButton(onPressed: widget.onComplete),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRadioListTile(String title, int value) {
+    return ListTile(
+      title: Text(title),
+      leading: Radio<int>(
+        value: value,
+        groupValue: _selectedOption,
+        onChanged: (int? newValue) {
+          setState(() => _selectedOption = newValue!);
+          _surveyBox.put('historyInterest', newValue);
+        },
+      ),
+    );
+  }
+}
+
+class _FoodPreferenceDialog extends StatefulWidget {
+  final VoidCallback onBack;
+  final VoidCallback onComplete;
+
+  const _FoodPreferenceDialog({
+    Key? key,
+    required this.onBack,
+    required this.onComplete,
+  }) : super(key: key);
+
+  @override
+  _FoodPreferenceDialogState createState() => _FoodPreferenceDialogState();
+}
+
+class _FoodPreferenceDialogState extends State<_FoodPreferenceDialog> {
+  final List<String> _selectedFood = [];
+  final List<String> _selectedDrink = [];
+  final Box _surveyBox = Hive.box('surveyBox');
+
+  @override
+  Widget build(BuildContext context) {
+    return _SurveyDialogWrapper(
+      child: Column(
+        children: [
+          const Text(
+            '좋아하는 음식과 음료의\n\t\t종류를 선택해주세요.',
+            style: TextStyle(fontSize: 18),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                _buildPreferenceGrid(
+                  ["한식", "양식", "중식", "일식"],
+                  _selectedFood,
+                  'food',
+                ),
+                const Divider(thickness: 1, color: Colors.grey),
+                _buildPreferenceGrid(
+                  ["커피류", "생과일주스", "따뜻한 차", "스무디"],
+                  _selectedDrink,
+                  'drink',
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _BackButton(onPressed: widget.onBack),
+              _NextButton(onPressed: widget.onComplete),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreferenceGrid(List<String> items, List<String> selectedItems, String key) {
+    return Expanded(
+      child: GridView.count(
+        crossAxisCount: 4,
+        childAspectRatio: 1.5,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 20,
+        padding: const EdgeInsets.all(10),
+        children: items.map((item) => _buildPreferenceItem(item, selectedItems, key)).toList(),
+      ),
+    );
+  }
+
+  Widget _buildPreferenceItem(String item, List<String> selectedItems, String key) {
+    final bool isSelected = selectedItems.contains(item);
+    return InkWell(
+      onTap: () => _toggleSelection(item, selectedItems, key),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.green[100] : Colors.grey[200],
+          borderRadius: BorderRadius.circular(8),
+          border: isSelected ? Border.all(color: Colors.green, width: 2) : null,
+        ),
+        child: Center(
+          child: Text(
+            item,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected ? Colors.green : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _toggleSelection(String item, List<String> selectedItems, String key) {
+    setState(() {
+      if (selectedItems.contains(item)) {
+        selectedItems.remove(item);
+      } else {
+        selectedItems.add(item);
+      }
+      _surveyBox.put(key, selectedItems);
+    });
+  }
+}
+
+class _AllergyDialog extends StatelessWidget {
+  final VoidCallback onBack;
+  final VoidCallback onComplete;
+
+  const _AllergyDialog({
+    Key? key,
+    required this.onBack,
+    required this.onComplete,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController allergyController = TextEditingController();
+    final Box surveyBox = Hive.box('surveyBox');
+
+    return _SurveyDialogWrapper(
+      child: Column(
+        children: [
+          const Text(
+            '못 먹거나 알러지 있는 음식\n\t\t\t\t\t\t\t있으면 알려주세요.',
+            style: TextStyle(fontSize: 18),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: TextField(
+              controller: allergyController,
+              decoration: const InputDecoration(
+                hintText: '여기에 입력하세요',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _BackButton(onPressed: onBack),
+              _SubmitButton(
+                onPressed: () {
+                  surveyBox.put('allergies', allergyController.text);
+                  onComplete();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NextButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _NextButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      iconSize: 65.0,
+      icon: Image.asset(
+        'assets/images/next_dragon.png',
+        fit: BoxFit.contain,
+      ),
+      onPressed: onPressed,
+    );
+  }
+}
+
+class _BackButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _BackButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0, left: 23.0),
+      child: IconButton(
+        iconSize: 100.0,
+        icon: Image.asset(
+          'assets/images/before_dragon.png',
+          fit: BoxFit.contain,
+        ),
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+class _SubmitButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _SubmitButton({Key? key, required this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0, right: 15.0),
+      child: IconButton(
+        iconSize: 118,
+        icon: Image.asset(
+          'assets/images/submit_dragon.png',
+          fit: BoxFit.contain,
+        ),
+        onPressed: onPressed,
       ),
     );
   }

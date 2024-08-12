@@ -1,4 +1,4 @@
-import 'package:ai_assistant/screen/splash_screen2.dart';
+import 'package:ai_assistant/screen/SurveyPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
             titleTextStyle: TextStyle(
                 color: Colors.blue, fontSize: 20, fontWeight: FontWeight.w500),
           )),
-      home: const SplashScreen2(),
+      home: const SurveyPage(),
     );
   }
 }
