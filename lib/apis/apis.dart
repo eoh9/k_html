@@ -4,8 +4,9 @@ import 'dart:developer';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:http/http.dart';
 import 'package:translator_plus/translator_plus.dart';
-
 import '../helper/global.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class APIs {
   //get answer from google gemini ai
@@ -35,55 +36,52 @@ class APIs {
     }
   }
 
-  //get answer from chat gpt
-  // static Future<String> getAnswer(String question) async {
-  //   try {
-  //     log('api key: $apiKey');
-
-  //     //
-  //     final res =
-  //         await post(Uri.parse('https://api.openai.com/v1/chat/completions'),
-
-  //             //headers
-  //             headers: {
-  //               HttpHeaders.contentTypeHeader: 'application/json',
-  //               HttpHeaders.authorizationHeader: 'Bearer $apiKey'
-  //             },
-
-  //             //body
-  //             body: jsonEncode({
-  //               "model": "gpt-3.5-turbo",
-  //               "max_tokens": 2000,
-  //               "temperature": 0,
-  //               "messages": [
-  //                 {"role": "user", "content": question},
-  //               ]
-  //             }));
-
-  //     final data = jsonDecode(res.body);
-
-  //     log('res: $data');
-  //     return data['choices'][0]['message']['content'];
-  //   } catch (e) {
-  //     log('getAnswerGptE: $e');
-  //     return 'Something went wrong (Try again in sometime)';
-  //   }
-  // }
-
-  static Future<List<String>> searchAiImages(String prompt) async {
+  static Future<List<double>> uploadImage(File image) async {
     try {
-      final res =
-          await get(Uri.parse('https://lexica.art/api/v1/search?q=$prompt'));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("http://your-flask-server-url/predict"),  // ngrok URL 사용
+      );
+      request.files.add(await http.MultipartFile.fromPath('file', image.path));
+      var response = await request.send();
 
-      final data = jsonDecode(res.body);
-
-      //
-      return List.from(data['images']).map((e) => e['src'].toString()).toList();
+      if (response.statusCode == 200) {
+        var responseData = await http.Response.fromStream(response);
+        List<dynamic> result = json.decode(responseData.body);
+        return List<double>.from(result);
+      } else {
+        throw Exception("Failed to load predictions");
+      }
     } catch (e) {
-      log('searchAiImagesE: $e');
+      log('uploadImage error: $e');
       return [];
     }
   }
+
+  static Future<List<double>> searchAiImages(File image) async {
+    try {
+      // ngrok에서 생성된 URL을 사용하여 Flask 서버에 이미지를 업로드하고 분류 결과를 요청
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("https://abcdef1234.ngrok.io/predict"),  // ngrok이 제공한 URL
+      );
+      request.files.add(await http.MultipartFile.fromPath('file', image.path));
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        var responseData = await http.Response.fromStream(response);
+        List<dynamic> result = json.decode(responseData.body);
+        return List<double>.from(result);
+      } else {
+        throw Exception("Failed to load predictions");
+      }
+    } catch (e) {
+      log('searchAiImages error: $e');
+      return [];
+    }
+  }
+
+
 
   static Future<String> googleTranslate(
       {required String from, required String to, required String text}) async {

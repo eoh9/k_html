@@ -19,6 +19,8 @@ dependencies:
   # appwrite: 
   #   path: ./appwrite
 
+  flutter_dotenv: ^5.0.2
+  image_picker: ^0.8.4+4
   # iOS Styled Icons
   cupertino_icons: ^1.0.8
 
