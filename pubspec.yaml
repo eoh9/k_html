@@ -86,6 +86,7 @@ flutter:
   assets:
     - assets/images/
     - assets/lottie/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # fonts:
