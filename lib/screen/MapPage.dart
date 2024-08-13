@@ -15,9 +15,6 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('카카오맵'),
-      ),
       body: InAppWebView(
         initialUrlRequest: URLRequest(url: Uri.parse(url)),
         initialOptions: InAppWebViewGroupOptions(
@@ -28,18 +25,33 @@ class _MapPageState extends State<MapPage> {
         ),
         onWebViewCreated: (controller) {
           webViewController = controller;
+          // Set up JavaScript handlers here
+          controller.addJavaScriptHandler(handlerName: 'myFlutterApp', callback: (args) {
+            if (args.isNotEmpty && args[0] == 'showModal') {
+              String markerId = args[1];  // 마커 ID 받기
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return Container(
+                    height: 400,
+                    margin: const EdgeInsets.only(left: 5, right: 5, bottom: 40),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/buttomWid.png'), // 이미지 파일
+                        fit: BoxFit.cover, // 이미지가 컨테이너를 꽉 채우도록 조정
+                      ),
+                    ),// 마커 ID를 화면에 표시
+                  );
+                },
+                backgroundColor: Colors.transparent,
+              );
+            }
+          });
         },
         onLoadStop: (controller, url) async {
-          // 지도가 로드된 후 필요한 JavaScript 실행
-          await controller.evaluateJavascript(source: """
-            // 여기에 카카오맵 초기화 코드나 다른 필요한 JavaScript 코드를 추가하세요
-          """);
-        },
-        onLoadError: (controller, url, code, message) {
-          print('WebView 로드 오류: $code, $message');
-        },
-        onConsoleMessage: (controller, consoleMessage) {
-          print('콘솔 메시지: ${consoleMessage.message}');
+          // 페이지 로드가 완료된 후 추가 작업을 할 수 있습니다.
         },
       ),
     );

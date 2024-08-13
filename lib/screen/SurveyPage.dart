@@ -33,15 +33,15 @@ class _SurveyPageState extends State<SurveyPage> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center, // 세로 축에서 가운데 정렬
               children: [
                 _buildHeaderText(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 _buildServiceSelection(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 _buildNextButton(),
               ],
             ),
@@ -149,9 +149,9 @@ class _SurveyPageState extends State<SurveyPage> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.teal : Colors.white,
+              color: isSelected ? Colors.white : Color(0xFF4CFAD0),
               border: Border.all(
-                color: Colors.teal,
+                color: Color(0xFF4CFAD0),
                 width: 2,
               ),
               boxShadow: [
@@ -168,11 +168,11 @@ class _SurveyPageState extends State<SurveyPage> {
               height: 40,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height:4),
           Text(
             option.label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.bold, // 아이콘 아래의 글자를 볼드체로 변경
               color: isSelected ? Colors.teal : Colors.black,
             ),
