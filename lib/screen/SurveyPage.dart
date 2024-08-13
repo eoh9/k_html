@@ -49,7 +49,6 @@ class _SurveyPageState extends State<SurveyPage> {
     );
   }
 
-<<<<<<< HEAD
   Widget _buildHeaderText() {
     return Container(
       height: 100,
@@ -74,9 +73,6 @@ class _SurveyPageState extends State<SurveyPage> {
     );
   }
 
-=======
-  
->>>>>>> e03c2af (상세페이지 구현 완료)
   Widget _buildServiceSelection() {
     return Container(
       height: 300,
