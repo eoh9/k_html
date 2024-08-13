@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   kakao_flutter_sdk_common: ^1.9.5
   webview_flutter: ^4.8.0
-
+  dash_chat_2: ^0.0.21
   # App Write Database (For dynamically getting API Key)  
   appwrite: ^12.0.4
   # appwrite: 
@@ -73,6 +73,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # Encourages Good Practices
   flutter_lints: ^4.0.0

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'MapPage.dart';
+import 'ChatPage.dart';
 
 class SurveyPage extends StatefulWidget {
   const SurveyPage({Key? key}) : super(key: key);
@@ -10,9 +10,9 @@ class SurveyPage extends StatefulWidget {
 }
 
 class _SurveyPageState extends State<SurveyPage> {
-  List<int> _selectedServices = []; // 여러 선택을 관리하는 리스트
+  List<int> _selectedServices = [];
 
-  final List<ServiceOption> _serviceOptions = [
+  final List<ServiceOption> _serviceOptions = const [
     ServiceOption(icon: 'assets/icons/hearing.png', label: '청각 서비스'),
     ServiceOption(icon: 'assets/icons/visual.png', label: '시각 서비스'),
     ServiceOption(icon: 'assets/icons/wheelchair.png', label: '휠체어 서비스'),
@@ -36,7 +36,7 @@ class _SurveyPageState extends State<SurveyPage> {
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center, // 세로 축에서 가운데 정렬
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildHeaderText(),
                 const SizedBox(height: 15),
@@ -53,20 +53,19 @@ class _SurveyPageState extends State<SurveyPage> {
 
   Widget _buildHeaderText() {
     return Container(
-      height: 100, // 높이 조정
+      height: 100,
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // 그림자 색상과 투명도
-            blurRadius: 6, // 그림자의 흐림 정도
-            offset: Offset(0, 3), // 그림자의 위치
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: const Center(
-        // 텍스트를 중앙에 배치
         child: Text(
           '더 좋은 서비스를 제공하기 위해\n간단한 설문을 진행하겠습니다.',
           textAlign: TextAlign.center,
@@ -78,25 +77,24 @@ class _SurveyPageState extends State<SurveyPage> {
 
   Widget _buildServiceSelection() {
     return Container(
-      height: 300, // 높이 조정
+      height: 300,
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2), // 그림자 색상과 투명도
-            blurRadius: 6, // 그림자의 흐림 정도
-            offset: Offset(0, 3), // 그림자의 위치
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch, // stretch를 통해 텍스트가 가운데 정렬되도록 설정
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
             '필요한 서비스를 선택해 주세요.',
-            textAlign: TextAlign.center, // 텍스트를 가운데 정렬
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 30),
@@ -117,7 +115,7 @@ class _SurveyPageState extends State<SurveyPage> {
                   ..._serviceOptions
                       .sublist(3)
                       .map((option) =>
-                          Expanded(child: _buildServiceOption(option)))
+                      Expanded(child: _buildServiceOption(option)))
                       .toList(),
                   SizedBox(width: MediaQuery.of(context).size.width * 0.15),
                 ],
@@ -131,7 +129,7 @@ class _SurveyPageState extends State<SurveyPage> {
 
   Widget _buildServiceOption(ServiceOption option) {
     bool isSelected =
-        _selectedServices.contains(_serviceOptions.indexOf(option));
+    _selectedServices.contains(_serviceOptions.indexOf(option));
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -143,41 +141,44 @@ class _SurveyPageState extends State<SurveyPage> {
           }
         });
       },
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: isSelected ? Colors.white : Color(0xFF4CFAD0),
-              border: Border.all(
-                color: Color(0xFF4CFAD0),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1), // 그림자 색상과 투명도
-                  blurRadius: 6, // 그림자의 흐림 정도
-                  offset: Offset(0, 3), // 그림자의 위치
+      child: Semantics(
+        selected: isSelected,
+        child: Column(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : const Color(0xFF4CFAD0),
+                border: Border.all(
+                  color: const Color(0xFF4CFAD0),
+                  width: 2,
                 ),
-              ],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Image.asset(
+                option.icon,
+                width: 40,
+                height: 40,
+              ),
             ),
-            child: Image.asset(
-              option.icon,
-              width: 40,
-              height: 40,
+            const SizedBox(height: 4),
+            Text(
+              option.label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.teal : Colors.black,
+              ),
             ),
-          ),
-          const SizedBox(height:4),
-          Text(
-            option.label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold, // 아이콘 아래의 글자를 볼드체로 변경
-              color: isSelected ? Colors.teal : Colors.black,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -192,45 +193,48 @@ class _SurveyPageState extends State<SurveyPage> {
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
               blurRadius: 6,
-              offset: Offset(0, 3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
         child: ElevatedButton(
           onPressed: () {
             if (_selectedServices.isNotEmpty) {
-              var box = Hive.box('selectedServicesBox');
-              box.put('selectedServices', _selectedServices);
-
-              // MapPage로 이동
+              _saveSelectedServices();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const MapPage()),
+                MaterialPageRoute(builder: (context) => ChatbotScreen()),
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('적어도 하나의 서비스를 선택해 주세요.'),
                   duration: Duration(seconds: 2),
                 ),
               );
             }
           },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            minimumSize: const Size(90, 50),
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+          ),
           child: const Text(
             '완료 >',
             style: TextStyle(color: Colors.black),
           ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            minimumSize: Size(90, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-          ),
         ),
       ),
     );
+  }
+
+  void _saveSelectedServices() async {
+    final box = await Hive.openBox('selectedServicesBox');
+    await box.put('selectedServices', _selectedServices);
+    await box.close();
   }
 }
 
@@ -238,5 +242,5 @@ class ServiceOption {
   final String icon;
   final String label;
 
-  ServiceOption({required this.icon, required this.label});
+  const ServiceOption({required this.icon, required this.label});
 }
