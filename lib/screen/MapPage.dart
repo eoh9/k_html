@@ -25,30 +25,61 @@ class _MapPageState extends State<MapPage> {
         ),
         onWebViewCreated: (controller) {
           webViewController = controller;
-          // Set up JavaScript handlers here
-          controller.addJavaScriptHandler(handlerName: 'myFlutterApp', callback: (args) {
-            if (args.isNotEmpty && args[0] == 'showModal') {
-              String markerId = args[1];  // 마커 ID 받기
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: 400,
-                    margin: const EdgeInsets.only(left: 5, right: 5, bottom: 40),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      image: DecorationImage(
-                        image: AssetImage('assets/images/buttomWid.png'), // 이미지 파일
-                        fit: BoxFit.cover, // 이미지가 컨테이너를 꽉 채우도록 조정
-                      ),
-                    ),// 마커 ID를 화면에 표시
+          controller.addJavaScriptHandler(
+              handlerName: 'myFlutterApp',
+              callback: (args) {
+                if (args.isNotEmpty && args[0] == 'showModal') {
+                  String markerId = args[1];
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return GestureDetector(
+                        onVerticalDragUpdate: (details) {
+                          int sensitivity = 8;
+                          if (details.delta.dy < -sensitivity) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                        child: Container(
+                          height: 800,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          child: Stack(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(top: 40, bottom: 10, left: 10, right: 10),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage('assets/images/buttomWid.png'),
+                                      fit: BoxFit.cover,
+                                      alignment: Alignment.center,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                  height: 4.0,
+                                  width: 100.0,
+                                  color: Colors.black,
+                                  margin: EdgeInsets.only(top: 15),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    backgroundColor: Colors.transparent,
                   );
-                },
-                backgroundColor: Colors.transparent,
-              );
-            }
-          });
+                }
+              }
+          );
         },
         onLoadStop: (controller, url) async {
           // 페이지 로드가 완료된 후 추가 작업을 할 수 있습니다.

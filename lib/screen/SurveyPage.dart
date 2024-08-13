@@ -38,8 +38,6 @@ class _SurveyPageState extends State<SurveyPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildHeaderText(),
-                const SizedBox(height: 15),
                 _buildServiceSelection(),
                 const SizedBox(height: 15),
                 _buildNextButton(),
@@ -51,6 +49,7 @@ class _SurveyPageState extends State<SurveyPage> {
     );
   }
 
+<<<<<<< HEAD
   Widget _buildHeaderText() {
     return Container(
       height: 100,
@@ -75,6 +74,9 @@ class _SurveyPageState extends State<SurveyPage> {
     );
   }
 
+=======
+  
+>>>>>>> e03c2af (상세페이지 구현 완료)
   Widget _buildServiceSelection() {
     return Container(
       height: 300,
